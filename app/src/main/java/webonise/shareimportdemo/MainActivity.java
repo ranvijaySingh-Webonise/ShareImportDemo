@@ -13,11 +13,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
         if (isStoragePermissionGranted) {
             FileUtil fileUtil = new FileUtil(this);
             String content = getContent();
+            Toast.makeText(MainActivity.this, "Successfully! Converted Sample model to json",
+                    Toast.LENGTH_SHORT).show();
             Log.i(TAG, content);
             mFilePath = fileUtil.writeToFile(content);
         } else {
@@ -154,32 +152,24 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == PICK_FILE_RESULT_CODE) {
             if (data != null) {
                 Uri uri = data.getData();
-                readFileContent(uri);
+                FileUtil fileUtil = new FileUtil(this);
+                String fileContent = fileUtil.readFile(uri);
+                if (TextUtils.isEmpty(fileContent)){
+                    Toast.makeText(this,"Unable to read file content",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                setFileContent(fileContent);
             }
         }
     }
 
     /**
-     * Function to read a file content
-     *
-     * @param uri Uri
+     * Function to set file content into a model
+     * @param fileContent String
      */
-    public void readFileContent(Uri uri) {
-        BufferedReader br;
-        try {
-            br = new BufferedReader(new InputStreamReader(getContentResolver()
-                    .openInputStream(uri)));
-            StringBuilder stringBuilder = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                stringBuilder.append(line);
-            }
-            br.close();
-            tvImportedFileContent.setText(stringBuilder.toString());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void setFileContent(String fileContent) {
+        SampleModel sampleModel = new Gson().fromJson(fileContent,SampleModel.class);
+        Toast.makeText(MainActivity.this, "Successfully parsed file content into sample model",
+                Toast.LENGTH_SHORT).show();
     }
 }

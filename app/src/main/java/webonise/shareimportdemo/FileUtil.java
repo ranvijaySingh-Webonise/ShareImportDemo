@@ -1,6 +1,7 @@
 package webonise.shareimportdemo;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
@@ -40,7 +41,7 @@ public class FileUtil {
                 FileOutputStream fileOutputStream = new FileOutputStream(file);
                 fileOutputStream.write(content.getBytes());
                 fileOutputStream.close();
-                Toast.makeText(mActivity, "Message saved", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mActivity, "Content is written on file", Toast.LENGTH_SHORT).show();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -100,5 +101,31 @@ public class FileUtil {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Function to read a file content
+     *
+     * @param uri Uri
+     */
+    public String readFile(Uri uri) {
+        BufferedReader br;
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            br = new BufferedReader(new InputStreamReader(mActivity.getContentResolver()
+                    .openInputStream(uri)));
+            String line;
+            while ((line = br.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+            Toast.makeText(mActivity, "Successfully read file content",
+                    Toast.LENGTH_SHORT).show();
+            br.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return stringBuilder.toString();
     }
 }
