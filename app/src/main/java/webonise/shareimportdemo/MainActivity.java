@@ -168,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
      * @param fileContent String
      */
     private void setFileContent(String fileContent) {
+        tvImportedFileContent.setText(fileContent);
         SampleModel sampleModel = new Gson().fromJson(fileContent,SampleModel.class);
         Toast.makeText(MainActivity.this, "Successfully parsed file content into sample model",
                 Toast.LENGTH_SHORT).show();
