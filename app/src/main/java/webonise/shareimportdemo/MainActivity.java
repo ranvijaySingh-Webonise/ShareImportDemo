@@ -13,13 +13,18 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+    private static final int PICK_FILE_RESULT_CODE = 2;
     private TextView tvImportedFileContent;
     private TextView tvWriteToFileContent;
     private boolean isStoragePermissionGranted;
@@ -136,6 +141,45 @@ public class MainActivity extends AppCompatActivity {
      * @param view View
      */
     public void onClickImportFileButton(View view) {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        //For reading plain text file use : "text/plain"
+        //For reading any type of file use : "*/*"
+        intent.setType("text/plain");
+        startActivityForResult(intent, PICK_FILE_RESULT_CODE);
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_FILE_RESULT_CODE) {
+            if (data != null) {
+                Uri uri = data.getData();
+                readFileContent(uri);
+            }
+        }
+    }
+
+    /**
+     * Function to read a file content
+     *
+     * @param uri Uri
+     */
+    public void readFileContent(Uri uri) {
+        BufferedReader br;
+        try {
+            br = new BufferedReader(new InputStreamReader(getContentResolver()
+                    .openInputStream(uri)));
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+            br.close();
+            tvImportedFileContent.setText(stringBuilder.toString());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
