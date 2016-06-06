@@ -21,11 +21,11 @@
             android:text="Write to file content"/>
 
         <Button
-            android:id="@+id/bWriteToFile"
+            android:id="@+id/bWriteToFileJson"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onClickWriteToFileButton"
-            android:text="Write to file"/>
+            android:text="Write to file - GEOJSON"/>
 
         <Button
             android:id="@+id/bShareFile"

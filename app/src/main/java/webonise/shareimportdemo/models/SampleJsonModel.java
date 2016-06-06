@@ -1,8 +1,8 @@
-package webonise.shareimportdemo;
+package webonise.shareimportdemo.models;
 
 import java.util.List;
 
-public class SampleModel {
+public class SampleJsonModel {
     private int id;
     private int userId;
     private List<String> nameList;

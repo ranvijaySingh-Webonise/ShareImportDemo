@@ -1,4 +1,4 @@
-package webonise.shareimportdemo;
+package webonise.shareimportdemo.utils;
 
 import android.app.Activity;
 import android.net.Uri;

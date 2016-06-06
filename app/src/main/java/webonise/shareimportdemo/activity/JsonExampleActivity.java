@@ -1,6 +1,5 @@
-package webonise.shareimportdemo;
+package webonise.shareimportdemo.activity;
 
-import android.Manifest;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,42 +16,29 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+import webonise.shareimportdemo.utils.FileUtil;
+import webonise.shareimportdemo.R;
+import webonise.shareimportdemo.models.SampleJsonModel;
 
-    private static final String TAG = "MainActivity";
+public class JsonExampleActivity extends AppCompatActivity {
+
+    private static final String TAG = "JsonExampleActivity";
     private static final int PICK_FILE_RESULT_CODE = 2;
     private TextView tvImportedFileContent;
     private TextView tvWriteToFileContent;
-    private boolean isStoragePermissionGranted;
     private String mFilePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_json_example);
         initializeComponents();
     }
 
     private void initializeComponents() {
         tvImportedFileContent = (TextView) findViewById(R.id.tvImportedFileContent);
         tvWriteToFileContent = (TextView) findViewById(R.id.tvWriteToFileContent);
-        askForPermission();
         tvWriteToFileContent.setText(getContent());
-    }
-
-    /**
-     * Function to ask for write to file permission or storage permission
-     */
-    private void askForPermission() {
-        new PermissionUtil(this).checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, new
-                PermissionUtil.OnPermissionGranted() {
-                    @Override
-                    public void permissionGranted() {
-                        isStoragePermissionGranted = true;
-                        Toast.makeText(MainActivity.this, "Permission Granted! Now you can write " +
-                                "to file", Toast.LENGTH_SHORT).show();
-                    }
-                }, "Please give storage permission");
     }
 
     /**
@@ -61,16 +47,13 @@ public class MainActivity extends AppCompatActivity {
      * @param view View
      */
     public void onClickWriteToFileButton(View view) {
-        if (isStoragePermissionGranted) {
-            FileUtil fileUtil = new FileUtil(this);
-            String content = getContent();
-            Toast.makeText(MainActivity.this, "Successfully! Converted Sample model to json",
-                    Toast.LENGTH_SHORT).show();
-            Log.i(TAG, content);
-            mFilePath = fileUtil.writeToFile(content);
-        } else {
-            askForPermission();
-        }
+        FileUtil fileUtil = new FileUtil(this);
+        String content = getContent();
+        Toast.makeText(JsonExampleActivity.this, "Successfully! Converted Sample model to json",
+                Toast.LENGTH_SHORT).show();
+        Log.i(TAG, content);
+        mFilePath = fileUtil.writeToFile(content);
+
     }
 
     /**
@@ -85,15 +68,15 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Function to get sample model
      *
-     * @return SampleModel
+     * @return SampleJsonModel
      */
-    private SampleModel getSampleModel() {
-        SampleModel sampleModel = new SampleModel();
-        sampleModel.setId(1);
-        sampleModel.setUserName("Rana");
-        sampleModel.setUserId(439745);
-        sampleModel.setNameList(getNameList());
-        return sampleModel;
+    private SampleJsonModel getSampleModel() {
+        SampleJsonModel sampleJsonModel = new SampleJsonModel();
+        sampleJsonModel.setId(1);
+        sampleJsonModel.setUserName("Rana");
+        sampleJsonModel.setUserId(439745);
+        sampleJsonModel.setNameList(getNameList());
+        return sampleJsonModel;
     }
 
     /**
@@ -118,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void onClickShareFileButton(View view) {
         if (TextUtils.isEmpty(mFilePath)) {
-            Toast.makeText(MainActivity.this, "First you need to click on 'Write to file' button",
+            Toast.makeText(JsonExampleActivity.this, "First you need to click on 'Write to file' button",
                     Toast.LENGTH_SHORT).show();
             return;
         }
@@ -154,8 +137,8 @@ public class MainActivity extends AppCompatActivity {
                 Uri uri = data.getData();
                 FileUtil fileUtil = new FileUtil(this);
                 String fileContent = fileUtil.readFile(uri);
-                if (TextUtils.isEmpty(fileContent)){
-                    Toast.makeText(this,"Unable to read file content",Toast.LENGTH_SHORT).show();
+                if (TextUtils.isEmpty(fileContent)) {
+                    Toast.makeText(this, "Unable to read file content", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 setFileContent(fileContent);
@@ -165,17 +148,18 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Function to set file content into a model
+     *
      * @param fileContent String
      */
     private void setFileContent(String fileContent) {
         tvImportedFileContent.setText(fileContent);
         try {
-            SampleModel sampleModel = new Gson().fromJson(fileContent, SampleModel.class);
-            Toast.makeText(MainActivity.this, "Successfully parsed file content into sample model",
+            SampleJsonModel sampleJsonModel = new Gson().fromJson(fileContent, SampleJsonModel.class);
+            Toast.makeText(JsonExampleActivity.this, "Successfully parsed file content into sample model",
                     Toast.LENGTH_SHORT).show();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(MainActivity.this, "Unable to parsed file content into sample model",
+            Toast.makeText(JsonExampleActivity.this, "Unable to parsed file content into sample model",
                     Toast.LENGTH_SHORT).show();
         }
     }
